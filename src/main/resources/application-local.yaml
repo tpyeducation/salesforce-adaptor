@@ -1,0 +1,42 @@
+spring:
+  config:
+    import: optional:file:./env.properties
+
+  datasource:
+    url: ${LOCAL_DATA_SOURCE:jdbc:postgresql://localhost:5472/referenceDb}
+    username: ${LOCAL_DATASOURCE_USERNAME:referenceUser}
+    password: ${LOCAL_DATASOURCE_PASSWORD:referencePass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVER:localhost}:${KAFKA_SERVER_PORT:9092}
+    consumer:
+      group-id: medical-priority-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    listener:
+      ack-mode: manual
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ENDPOINT:http://localhost}:${KEYCLOAK_PORT:8082}/realms/${KEYCLOAK_REALM:myrealm}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+aws:
+  s3:
+    endpoint: ${AWS_S3_ENDPOINT:http://localhost:4566}
+    region: ${AWS_REGION:eu-west-2}
+    access-key: ${AWS_ACCESS_KEY:test}
+    secret-key: ${AWS_SECRET_KEY:test}
+    bucket: ${AWS_S3_BUCKET:audit-appointments}
